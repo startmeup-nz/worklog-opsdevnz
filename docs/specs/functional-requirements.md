@@ -9,13 +9,17 @@
 
 ### FR-1.1: Basic Creation
 
+*Requirements in FR-1.1, FR-1.1.A, and FR-1.1.B describe the default entry
+creation behaviour when no `template` is configured. When a template is
+configured, the template defines the complete entry (see FR-6).*
+
 - **FR-1.1.1**: Tool MUST create a new Markdown file with YAML frontmatter containing
   `title`, `date`, `author`, `tags`, and `draft` fields
 - **FR-1.1.2**: Tool MUST target today's date by default
 - **FR-1.1.3**: Tool MUST NOT overwrite existing entries — if a file already exists for the
   given date, it MUST open the existing file instead
 
-### FR-1.1.A: Frontmatter Format
+### FR-1.1.A: Frontmatter Format (default, no template)
 
 - **FR-1.1.A.1**: Frontmatter MUST use YAML format delimited by `---` markers
 - **FR-1.1.A.2**: `title` field MUST follow the pattern `"Work Log - {date}"`
@@ -24,7 +28,7 @@
 - **FR-1.1.A.5**: `tags` field MUST be a YAML list from `default_tags` in config
 - **FR-1.1.A.6**: `draft` field MUST default to `false`
 
-### FR-1.1.B: Body Generation
+### FR-1.1.B: Body Generation (default, no template)
 
 - **FR-1.1.B.1**: Tool MUST generate section headers from the `sections` list in config
 - **FR-1.1.B.2**: Each section MUST be an H2 heading (`## Title`)
@@ -60,7 +64,7 @@ The `worklog.toml` file supports the following fields:
 | `author` | string | No | `$USER` or `"unknown"` | Default author name |
 | `default_tags` | list | No | `["internal", "log"]` | Default YAML tags |
 | `editor` | string | No | (unset) | Preferred editor command (e.g. `"nvim"`, `"code"`). Overridden by `-e`/`--editor` CLI flag and `$VISUAL`/`$EDITOR` env vars |
-| `template` | string | No | (unset) | Path to a custom Markdown template (supports `{{DATE}}`, `{{TITLE}}` placeholders) |
+| `template` | string | No | (unset) | Path to a custom Markdown template defining the complete entry, including frontmatter. Supports `{{DATE}}`, `{{TITLE}}`, `{{AUTHOR}}`, `{{TAGS}}` placeholders |
 | `sections` | list | No | (see defaults) | Ordered section headers |
 
 ### FR-2.3: Config Initialisation *(0.1.0+)*
@@ -142,28 +146,60 @@ The `worklog.toml` file supports the following fields:
 
 ## FR-6: Custom Template
 
-### FR-6.1: Template Configuration
+### FR-6.1: Full-Entry Template
 
-- **FR-6.1.1**: Tool SHOULD support a `template` field in `worklog.toml` pointing to a
-  Markdown file. When set, the template replaces the built-in section-based body
-  generation for the worklog entry.
-- **FR-6.1.2**: Template files MAY use `{{DATE}}` and `{{TITLE}}` placeholders, which the
+- **FR-6.1.1**: When `template` is set in `worklog.toml`, the template file defines the
+  *complete* worklog entry, including both YAML frontmatter and body. The tool MUST NOT
+  auto-generate or prepend any frontmatter of its own.
+- **FR-6.1.2**: If no `template` field is configured, the tool MUST use the built-in
+  default (config-driven frontmatter and sections from the `sections` list).
+
+### FR-6.2: Placeholder Substitution
+
+- **FR-6.2.1**: Template files MAY use `{{DATE}}` and `{{TITLE}}` placeholders, which the
   tool replaces with the current date and a title derived from the entry date.
-- **FR-6.1.3**: If no `template` field is configured, the tool MUST use the built-in
-  default (config-driven sections from the `sections` list).
+- **FR-6.2.2**: Template files MAY use `{{AUTHOR}}` to pull the `author` value from
+  config. If no `author` is set in config, `{{AUTHOR}}` substitutes `"unknown"`.
+- **FR-6.2.3**: Template files MAY use `{{TAGS}}` to pull the `default_tags` from config
+  as a block-style YAML list. The substitution includes a leading newline followed by
+  each tag on its own line indented with `-` prefix (e.g., `\n  - dev\n  - log`).
+  If no `default_tags` is set, `{{TAGS}}` substitutes an empty list `[]`.
+- **FR-6.2.4**: All placeholders are case-sensitive — `{{date}}`, `{{title}}`, etc. are
+  not substituted.
+
+### FR-6.3: Template File Handling
+
+- **FR-6.3.1**: The template path is resolved relative to the directory containing
+  `worklog.toml` (same as `worklog_dir` resolution).
+- **FR-6.3.2**: If the template file does not exist, the tool MUST print an error to
+  stderr and exit with a non-zero code.
+- **FR-6.3.3**: The template MUST be a valid Markdown file. The tool MUST treat the
+  entire file content as the template — no sections or frontmatter are auto-generated.
 
 **Example:**
 
 `worklog.toml`:
 ```toml
+author = "opsdev"
+default_tags = ["dev", "log"]
 template = "my-worklog-template.md"
 ```
 
 `my-worklog-template.md`:
 ```markdown
+---
+title: "{{TITLE}}"
+date: {{DATE}}
+author: {{AUTHOR}}
+tags: {{TAGS}}
+mood: creative
+project: outcome-engineering
+draft: false
+---
+
 # {{TITLE}}
 
-Date: {{DATE}}
+**Date:** {{DATE}}
 
 Write whatever you want here — no predefined sections.
 ```
