@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-06-05
+
+### Added
+- Full-entry custom template: when `template` is set, the template defines
+  the *complete* worklog entry including YAML frontmatter. The tool no longer
+  auto-generates or prepends frontmatter (FR-6.1, Story 8 revision).
+- `{{AUTHOR}}` placeholder — pulls `author` from config, falls back to
+  `"unknown"` (FR-6.2.2, Story 9).
+- `{{TAGS}}` placeholder — renders `default_tags` as a block-style YAML
+  list, falls back to `[]` (FR-6.2.3, Story 9).
+- 8 new tests covering AUTHOR/TAGS placeholders, full-entry template,
+  case-sensitivity, and edge cases.
+
+### Changed
+- `render_template()` now accepts a `config` dict for AUTHOR/TAGS substitution.
+- **Breaking:** templates no longer receive auto-generated frontmatter —
+  the template defines the full entry. Existing templates should be updated
+  to include their own YAML frontmatter block.
+
+### Fixed
+- Trailing whitespace after `tags:` colon when `{{TAGS}}` substitution
+  produces a leading newline — `render_template()` now strips trailing
+  whitespace from every line.
+
 ## [0.1.3] — 2026-05-26
 
 ### Added
