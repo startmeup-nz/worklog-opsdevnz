@@ -260,7 +260,7 @@ project: wilde-studio
 - Template still doesn't define its own frontmatter — separate concern in config
 - Configuration grows (`[frontmatter]` section in `worklog.toml`)
 - No inline control — if `mood` changes daily, user must edit config each time
-- Doesn't solve Floyd's core expectation (template = full file control)
+- Doesn't solve core expectation (template = full file control)
 
 **What would change:**
 
@@ -290,8 +290,7 @@ Option **B (full-entry template)** is the strongest design for the long term:
 
 1. It matches what users naturally expect — the template is the file
 2. It eliminates the duplicate frontmatter bug without special-casing
-3. The breaking-change concern is minimal (v0.1.3 just shipped, no known
-   template users beyond Floyd)
+3. The breaking-change concern is minimal
 4. Mental model is the simplest: "template = your worklog file"
 
 Option **A** is the fastest fix (update docs only) and could be adopted as an
