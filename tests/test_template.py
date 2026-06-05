@@ -171,12 +171,8 @@ def test_render_template_tags_populated(tmp_path):
     config = {"default_tags": ["dev", "log", "ops"]}
     result = render_template(str(template), "2026-06-01", config)
 
-    # Block-style: leading newline + indented items
-    # (template line is 'tags: {{TAGS}}', substitution starts with \n)
-    assert "tags:" in result
-    assert "  - dev" in result
-    assert "  - log" in result
-    assert "  - ops" in result
+    # Block-style: leading newline + indented items, no trailing whitespace
+    assert "tags:\n  - dev\n  - log\n  - ops" in result
     assert "{{TAGS}}" not in result
 
 

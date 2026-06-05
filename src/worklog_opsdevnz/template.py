@@ -66,6 +66,9 @@ def render_template(
     content = content.replace("{{TITLE}}", title)
     content = content.replace("{{AUTHOR}}", author)
     content = content.replace("{{TAGS}}", tags)
+    # Clean trailing whitespace (avoids artifacts when placeholder
+    # substitution leaves space before a newline, e.g. 'tags: \n')
+    content = "\n".join(line.rstrip() for line in content.split("\n"))
     return content
 
 
