@@ -30,6 +30,7 @@ Template controls body content only. Frontmatter is always auto-generated.
 The tool prepends frontmatter before writing the file.
 
 **Template file:**
+
 ```markdown
 # {{TITLE}}
 
@@ -39,6 +40,7 @@ The tool prepends frontmatter before writing the file.
 ```
 
 **Generated entry:**
+
 ```markdown
 ---
 title: "Work Log - 2026-06-05"
@@ -58,16 +60,19 @@ draft: false
 ```
 
 **Pros:**
+
 - Config-driven `author` and `tags` always present
 - Consistent frontmatter format across entries
 - No code change needed — just documentation
 
 **Cons:**
+
 - Counter-intuitive: `{{DATE}}` and `{{TITLE}}` are naturally frontmatter fields
 - No way to add custom frontmatter fields (e.g. `mood`, `project`, `client`)
 - Template files look incomplete — they lack the surrounding structure
 
 **What would change:**
+
 - Update Story 8 to explicitly state: "Templates control body only. Frontmatter
   is always auto-generated. Do not include YAML frontmatter in template files."
 - Update the custom template example in `functional-requirements.md` to clarify
@@ -81,6 +86,7 @@ performs placeholder substitution across the whole file without prepending
 anything.
 
 **Template file:**
+
 ```markdown
 ---
 title: "{{TITLE}}"
@@ -102,6 +108,7 @@ draft: false
 ```
 
 **Generated entry:**
+
 ```markdown
 ---
 title: "Work Log - 2026-06-05"
@@ -123,18 +130,21 @@ draft: false
 ```
 
 **Pros:**
+
 - Simple mental model: "your template = your file"
 - Full control over frontmatter fields
 - `{{DATE}}` and `{{TITLE}}` work everywhere, naturally
 - No duplicate frontmatter
 
 **Cons:**
+
 - Loses config-driven `author`/`tags` injection — user must manage them in template
 - Breaking change for any existing template users (none known yet — v0.1.3 just shipped)
 - Template files are more verbose (must include the full `---` block)
 - No `{{AUTHOR}}` or `{{TAGS}}` placeholder exists yet (could be added)
 
 **What would change:**
+
 - `generate_content()`: if template is set, return `render_template()` output
   directly — no auto-generated frontmatter prepended
 - Add `{{AUTHOR}}` placeholder (or keep user managing `author` manually in template)
@@ -150,6 +160,7 @@ Tool generates base frontmatter (author, tags, draft), then detects if the
 template also contains YAML frontmatter and merges the user's custom fields in.
 
 **Template file:**
+
 ```markdown
 ---
 mood: creative
@@ -162,6 +173,7 @@ project: wilde-studio
 ```
 
 **Generated entry:**
+
 ```markdown
 ---
 title: "Work Log - 2026-06-05"
@@ -180,11 +192,13 @@ project: wilde-studio
 ```
 
 **Pros:**
+
 - Best of both worlds: config base + template extras
 - Backwards compatible with existing templates (no frontmatter → no merge needed)
 - User adds only the custom fields they care about
 
 **Cons:**
+
 - Complex to implement: YAML parsing, merge logic, field conflict rules
 - Magic behavior: user might not expect frontmatter to be merged
 - YAML parsing introduces error cases (malformed frontmatter in template)
@@ -192,6 +206,7 @@ project: wilde-studio
 - Template is neither body-only nor full-entry — ambiguous responsibility
 
 **What would change:**
+
 - Add YAML frontmatter extraction from template content
 - Parse template's frontmatter, merge with auto-generated base, write merged result
 - Template body = everything after the frontmatter `---` delimiter
@@ -207,6 +222,7 @@ Template stays body-only. User specifies extra frontmatter fields in
 `worklog.toml` config instead of in the template file.
 
 **worklog.toml:**
+
 ```toml
 template = "my-template.md"
 [frontmatter]
@@ -215,6 +231,7 @@ project = "wilde-studio"
 ```
 
 **Generated entry:**
+
 ```markdown
 ---
 title: "Work Log - 2026-06-05"
@@ -232,18 +249,21 @@ project: wilde-studio
 ```
 
 **Pros:**
+
 - Explicit, no magic — user declares custom fields in config
 - Template stays simple (body only)
 - Config is version-controllable alongside the template
 - Works with or without a custom template (just `[frontmatter]` alone adds fields)
 
 **Cons:**
+
 - Template still doesn't define its own frontmatter — separate concern in config
 - Configuration grows (`[frontmatter]` section in `worklog.toml`)
 - No inline control — if `mood` changes daily, user must edit config each time
 - Doesn't solve Floyd's core expectation (template = full file control)
 
 **What would change:**
+
 - Add `[frontmatter]` section to config schema (optional, TOML table)
 - Merge with auto-generated fields before writing
 - Update `get_config()` to include extra frontmatter
