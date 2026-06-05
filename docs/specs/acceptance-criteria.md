@@ -6,7 +6,7 @@
 
 ## 0.0.1 Staging Complete When:
 
-- [ ] Module directory structure created under `modules/worklog_opsdevnz/`
+- [ ] Module package structure created under `src/worklog_opsdevnz/`
 - [ ] `pyproject.toml` with correct metadata and dependencies
 - [ ] Functional and non-functional requirements documented
 - [ ] Design decision documented for Zensical blog integration (deferred)
