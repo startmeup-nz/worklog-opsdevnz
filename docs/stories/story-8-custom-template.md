@@ -33,7 +33,7 @@ Completed / Notes / Related / Next" sections.
 - [ ] `{{AUTHOR}}` in the template is replaced with the `author` value from
       config, or `"unknown"` if not set.
 - [ ] `{{TAGS}}` in the template is replaced with the `default_tags` from
-      config as a YAML-formatted list, or `[]` if not set.
+      config as a block-style YAML list, or `[]` if not set.
 - [ ] Placeholders are case-sensitive — `{{date}}`, `{{title}}`, etc. are
       not substituted.
 

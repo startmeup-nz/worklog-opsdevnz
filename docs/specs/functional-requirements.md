@@ -161,8 +161,9 @@ The `worklog.toml` file supports the following fields:
 - **FR-6.2.2**: Template files MAY use `{{AUTHOR}}` to pull the `author` value from
   config. If no `author` is set in config, `{{AUTHOR}}` substitutes `"unknown"`.
 - **FR-6.2.3**: Template files MAY use `{{TAGS}}` to pull the `default_tags` from config
-  as a YAML-formatted list. If no `default_tags` is set, `{{TAGS}}` substitutes an empty
-  list `[]`.
+  as a block-style YAML list. The substitution includes a leading newline followed by
+  each tag on its own line indented with `-` prefix (e.g., `\n  - dev\n  - log`).
+  If no `default_tags` is set, `{{TAGS}}` substitutes an empty list `[]`.
 - **FR-6.2.4**: All placeholders are case-sensitive — `{{date}}`, `{{title}}`, etc. are
   not substituted.
 

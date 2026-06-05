@@ -26,7 +26,8 @@ in my custom template,
 ### AC-9.3: `{{TAGS}}` placeholder
 
 - [ ] Templates MAY use `{{TAGS}}` to pull the `default_tags` from config
-      into frontmatter or body as a YAML-formatted list
+      into frontmatter or body as a block-style YAML list (each tag on its
+      own indented line with `-` prefix)
 - [ ] If `{{TAGS}}` is used but no `default_tags` is set, it substitutes
       an empty list `[]`
 
@@ -85,7 +86,7 @@ draft: false
 |-------|-------|
 | **Priority** | Medium |
 | **Version Target** | 0.2.0 |
-| **Dependencies** | Design decision on custom template scope (full-entry vs body-only) |
+| **Dependencies** | Design decision on custom template scope — resolved: Option B (full-entry), see [custom-template.md](../design/custom-template.md) |
 | **Spec Reference** | FR-6 (revision) |
 
 ---
