@@ -36,13 +36,36 @@ def generate_body(config: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def render_template(template_path: str, iso_date: str) -> str:
-    """Render a custom Markdown template with placeholder substitution."""
+def _render_tags(tags: list[str]) -> str:
+    """Render tags as a block-style YAML list substitution.
+
+    Empty list → '[]'. Populated list → leading newline followed by
+    each tag on its own indented line with '-' prefix.
+    """
+    if not tags:
+        return "[]"
+    return "\n" + "\n".join(f"  - {t}" for t in tags)
+
+
+def render_template(
+    template_path: str,
+    iso_date: str,
+    config: dict[str, Any],
+) -> str:
+    """Render a custom Markdown template with placeholder substitution.
+
+    Supports {{DATE}}, {{TITLE}}, {{AUTHOR}}, and {{TAGS}} placeholders.
+    All placeholders are case-sensitive.
+    """
     title = f"Work Log - {iso_date}"
+    tags = _render_tags(config.get("default_tags", []))
+    author = config.get("author", "unknown")
     with open(template_path) as f:
         content = f.read()
     content = content.replace("{{DATE}}", iso_date)
     content = content.replace("{{TITLE}}", title)
+    content = content.replace("{{AUTHOR}}", author)
+    content = content.replace("{{TAGS}}", tags)
     return content
 
 
@@ -52,16 +75,17 @@ def generate_content(
 ) -> str:
     """Generate full worklog content.
 
-    If a 'template' field is set in config, renders that file as the body.
-    Otherwise uses the built-in sections-based body.
-    Frontmatter is always generated regardless of template.
-    """
-    frontmatter = generate_frontmatter(config, iso_date)
+    If a 'template' field is set in config, the template defines the
+    complete entry (including YAML frontmatter). Placeholders are
+    substituted but nothing else is prepended.
 
+    Otherwise uses the built-in default: config-driven frontmatter and
+    sections-based body.
+    """
     template_path = config.get("template")
     if template_path:
-        body = render_template(template_path, iso_date)
-    else:
-        body = generate_body(config)
+        return render_template(template_path, iso_date, config)
 
+    frontmatter = generate_frontmatter(config, iso_date)
+    body = generate_body(config)
     return f"{frontmatter}\n{body}"
