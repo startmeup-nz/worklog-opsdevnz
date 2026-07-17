@@ -44,3 +44,11 @@
 - [x] Template file not found → error
 - [x] No template field → falls back to sections body
 - [x] Frontmatter always generated (templates only affect body)
+
+## 0.2.1 Previous Entry Flag When:
+
+- [ ] `-p` / `--previous` opens the most recent worklog entry before today
+- [ ] Discovery works across `flat`, `year`, and `year-month` structure modes
+- [ ] `-p` does not create a new file — only opens existing entries
+- [ ] No previous entries found → message to stderr, exit code 0
+- [ ] `-p` combined with `-e` applies editor override to the previous entry

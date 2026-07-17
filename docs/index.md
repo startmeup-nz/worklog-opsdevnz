@@ -31,6 +31,9 @@ worklog-opsdevnz --version
 
 # Override the editor for this run
 worklog-opsdevnz --editor nvim
+
+# Open the most recent previous entry
+worklog-opsdevnz -p
 ```
 
 ## Configuration

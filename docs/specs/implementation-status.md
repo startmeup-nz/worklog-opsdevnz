@@ -44,3 +44,9 @@
 | FR-6.1.3 | Fallback to built-in sections when no template | ✅ Implemented | `template.py:generate_content`, `test_generate_content_without_template` |
 
 ## v0.1.x (planned)
+
+## v0.2.1 (planned)
+
+| FR | Requirement | Status | Evidence |
+|----|-------------|--------|----------|
+| FR-5.5 | `-p` / `--previous` flag — open most recent entry before today | 📋 Specified | Story 10, FR-5.5.1–5.5.7 |

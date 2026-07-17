@@ -16,6 +16,9 @@ worklog-opsdevnz --version
 
 # Override the editor for this run
 worklog-opsdevnz --editor nvim
+
+# Open the most recent previous entry
+worklog-opsdevnz -p
 ```
 
 ## Configuration
@@ -51,6 +54,7 @@ title = "Next"
 - Configurable section headers per project
 - Custom body templates with `{{DATE}}` and `{{TITLE}}` placeholders
 - Editor integration: `-e` flag → config → `$VISUAL` → `$EDITOR`
+- `-p` / `--previous` flag to open the most recent past entry
 - `--version` flag for installed version
 
 ## Requirements
