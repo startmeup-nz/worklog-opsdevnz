@@ -65,6 +65,11 @@ addopts = "-v --cov=src/worklog_opsdevnz --cov-report=term-missing"
 line-length = 88
 target-version = "py312"
 
+# Explicit rule set (ruff's historical defaults) so CI is stable across
+# ruff upgrades — DTZ/I/etc. are intentionally not enabled: local-date
+# handling is this tool's core domain, not an oversight.
+lint.select = ["E4", "E7", "E9", "F"]
+
 [tool.mypy]
 python_version = "3.12"
 warn_return_any = true
