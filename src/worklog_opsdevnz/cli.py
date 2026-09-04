@@ -9,7 +9,7 @@ import click
 
 from worklog_opsdevnz import __version__
 from worklog_opsdevnz.config import get_config
-from worklog_opsdevnz.paths import resolve_path
+from worklog_opsdevnz.paths import find_previous, resolve_path
 from worklog_opsdevnz.template import generate_content
 
 
@@ -21,11 +21,27 @@ from worklog_opsdevnz.template import generate_content
     default=None,
     help="Override the editor command (overrides config, $VISUAL, $EDITOR).",
 )
-def main(editor: str | None) -> None:
-    """Create or open today's worklog entry."""
+@click.option(
+    "-p",
+    "--previous",
+    is_flag=True,
+    help="Open the most recent worklog entry before today (never creates).",
+)
+def main(editor: str | None, previous: bool) -> None:
+    """Create or open today's worklog entry, or the previous one with -p."""
     entry_date = date.today()
 
     config = get_config()
+
+    if previous:
+        target = find_previous(config, entry_date)
+        if target is None:
+            click.echo("No previous worklog entry found.", err=True)
+            return
+        print(f"Opening previous worklog: {target}")
+        _open_editor(target, editor, config.get("editor"))
+        return
+
     target = resolve_path(config, entry_date)
     target.parent.mkdir(parents=True, exist_ok=True)
 

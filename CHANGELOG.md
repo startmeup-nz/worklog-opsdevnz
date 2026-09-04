@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `-p` / `--previous` flag: open the most recent worklog entry before today
+  without creating anything. Discovery respects the configured `structure`
+  mode and `suffix`; no previous entry prints a message to stderr and exits
+  0 (FR-5.5, Story 10).
+
 ## [0.2.0] — 2026-06-05
 
 ### Added

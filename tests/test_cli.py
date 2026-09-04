@@ -1,6 +1,6 @@
 """Tests for CLI entry point."""
 
-from datetime import date
+from datetime import date, timedelta
 
 from click.testing import CliRunner
 
@@ -69,3 +69,69 @@ def test_main_editor_cli_overrides_config(tmp_path, monkeypatch):
     assert result.exit_code == 0
     # CLI override takes priority over config
     assert "Editor 'override-editor-test' not found" in result.output
+
+
+def test_previous_no_entries(tmp_path, monkeypatch):
+    """-p with no prior entries: message to stderr, exit 0, creates nothing."""
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    result = runner.invoke(main, ["-p"])
+    assert result.exit_code == 0
+    assert "No previous worklog entry found." in result.stderr
+    assert not (tmp_path / "docs").exists()
+
+
+def test_previous_opens_most_recent_before_today(tmp_path, monkeypatch):
+    """-p opens the newest prior entry, not today's, and creates no file."""
+    monkeypatch.chdir(tmp_path)
+    today = date.today()
+    year_dir = tmp_path / "docs" / "worklog" / str(today.year)
+    year_dir.mkdir(parents=True)
+    older = (today - timedelta(days=3)).strftime("%d-%m-%Y")
+    recent = (today - timedelta(days=1)).strftime("%d-%m-%Y")
+    (year_dir / f"{older}-worklog.md").write_text("older")
+    (year_dir / f"{recent}-worklog.md").write_text("recent")
+    today_file = year_dir / f"{today:%d-%m-%Y}-worklog.md"
+    today_file.write_text("today")
+
+    runner = CliRunner()
+    result = runner.invoke(main, ["--previous"])
+    assert result.exit_code == 0
+    assert recent in result.output
+    assert today.strftime("%d-%m-%Y") not in result.output
+
+
+def test_previous_does_not_create_today(tmp_path, monkeypatch):
+    """-p must not create today's entry even though it does not exist."""
+    monkeypatch.chdir(tmp_path)
+    today = date.today()
+    year_dir = tmp_path / "docs" / "worklog" / str(today.year)
+    year_dir.mkdir(parents=True)
+    (year_dir / f"{(today - timedelta(days=2)):%d-%m-%Y}-worklog.md").write_text("x")
+
+    runner = CliRunner()
+    runner.invoke(main, ["-p"])
+    assert not (year_dir / f"{today:%d-%m-%Y}-worklog.md").exists()
+
+
+def test_previous_editor_override(tmp_path, monkeypatch):
+    """-p combined with -e applies the editor override to the previous entry."""
+    monkeypatch.chdir(tmp_path)
+    today = date.today()
+    year_dir = tmp_path / "docs" / "worklog" / str(today.year)
+    year_dir.mkdir(parents=True)
+    recent = (today - timedelta(days=1)).strftime("%d-%m-%Y")
+    (year_dir / f"{recent}-worklog.md").write_text("recent")
+
+    runner = CliRunner()
+    result = runner.invoke(main, ["-p", "-e", "override-editor-test"])
+    assert result.exit_code == 0
+    assert "Editor 'override-editor-test' not found" in result.output
+
+
+def test_previous_help():
+    """--help mentions the --previous flag."""
+    runner = CliRunner()
+    result = runner.invoke(main, ["--help"])
+    assert result.exit_code == 0
+    assert "--previous" in result.output
