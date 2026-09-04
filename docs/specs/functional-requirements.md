@@ -127,6 +127,7 @@ The `worklog.toml` file supports the following fields:
 | Option | Description |
 |--------|-------------|
 | `-e`, `--editor` | Override editor command for this run |
+| `-p`, `--previous` | Open the most recent worklog entry before today |
 | `--version` | Print the installed version and exit |
 
 ### FR-5.3: Error Handling
@@ -141,6 +142,22 @@ The `worklog.toml` file supports the following fields:
   `importlib.metadata.version()` to avoid duplicating the version string across files
 - **FR-5.4.3**: If package metadata is unavailable (e.g. local editable install), the tool
   MUST fall back to a `"0.0.0+local"` placeholder
+
+### FR-5.5: Previous Entry Flag
+
+- **FR-5.5.1**: `-p` / `--previous` flag MUST open the most recent worklog entry before
+  today's date, rather than creating or opening today's entry
+- **FR-5.5.2**: Discovery MUST respect the configured `structure` mode (`flat`, `year`,
+  `year-month`) and `suffix` — the tool MUST scan the same directory tree it writes to
+- **FR-5.5.3**: If today's entry already exists, `-p` MUST still open the entry
+  chronologically *before* today (not today's own entry)
+- **FR-5.5.4**: If no previous entries are found (e.g. first use, empty directory), the
+  tool MUST print a message to stderr and exit with code 0
+- **FR-5.5.5**: `-p` MUST NOT create a new file — the flag is read-only
+- **FR-5.5.6**: When `-p` is combined with `-e` / `--editor`, the editor override MUST
+  apply to the previous entry in the same way it would for today's entry
+- **FR-5.5.7**: `-p` and `--version` are mutually independent; their interaction is
+  undefined (user should not combine them, behaviour is unspecified)
 
 ---
 

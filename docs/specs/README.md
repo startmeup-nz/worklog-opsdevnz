@@ -20,7 +20,7 @@
 
 | Document | Description |
 |----------|-------------|
-| [Functional Requirements](functional-requirements.md) | FR-1 through FR-6 — entry creation, config discovery, structure modes, editor integration, CLI interface, custom templates |
+| [Functional Requirements](functional-requirements.md) | FR-1 through FR-6 — entry creation, config discovery, structure modes, editor integration, CLI interface (including `-p` flag), custom templates |
 | [Non-Functional Requirements](NFR.md) | NFR-1 through NFR-9 — code quality, path handling, compatibility, testing, release process, security |
 | [Acceptance Criteria](acceptance-criteria.md) | Per-version gate criteria — what must pass at each milestone |
 | [Implementation Status](implementation-status.md) | Per-version status tables — what's implemented, in design, or planned |
